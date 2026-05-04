@@ -1,4 +1,4 @@
-# CoT-RAG: Integrating Chain of Thought and Retrieval-Augmented Generation (整合思維鏈與檢索增強生成以提升大型語言模型的推理能力)
+# CoT-RAG: Integrating Chain of Thought and Retrieval-Augmented Generation
 
 ## 總結
 

@@ -1,4 +1,4 @@
-- [Optimizing Large Language Models: A Deep Dive into Effective Prompt Engineering Techniques](網址)
+- [Optimizing Large Language Models: A Deep Dive into Effective Prompt Engineering Techniques](https://www.mdpi.com/2076-3417/15/3/1430)
 - 來源日期： Applied Sciences (2076-3417),Feb2025
 - 資料來源： Applied Science & Technology Source
 - 說明 

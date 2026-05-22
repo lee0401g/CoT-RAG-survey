@@ -1,5 +1,5 @@
 - 研討論文
-- [CoT-RAG: Integrating Chain of Thought and Retrieval-Augmented Generation to Enhance Reasoning in Large Language Models](https://research.ebsco.com/c/bnhxo7/search/details/qrc6yspc7n?limiters=None&q=CoT-RAG&searchMode=all)
+- [CoT-RAG: Integrating Chain of Thought and Retrieval-Augmented Generation to Enhance Reasoning in Large Language Models](https://arxiv.org/pdf/2504.13534)
 - 來源日期： 20250418
 - 資料庫：arXiv
 - 說明

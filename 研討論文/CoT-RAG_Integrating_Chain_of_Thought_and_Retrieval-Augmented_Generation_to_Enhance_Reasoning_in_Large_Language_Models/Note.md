@@ -71,7 +71,7 @@
         | `sub_description` | 對應子問題的文本描述。**初始值為空**，後續由使用者查詢中提取的資訊或其他實體的「答案」進行賦值 |
         | `answer`          | LLM 對子問題輸出的推理結果。**初始值為空**，直到第三階段才會生成                   |
         
-![Figure_3](./CoT-RAG-survey/研討論文/CoT-RAG_Integrating_Chain_of_Thought_and_Retrieval-Augmented_Generation_to_Enhance_Reasoning_in_Large_Language_Models/images/Figure_3.png)
+![Figure_3](./images/Figure_3.png)
 
 3. 產生 初始「虛擬程式知識圖譜」(PKG)
 
@@ -95,7 +95,7 @@
 
 ### 4. 系統架構
 
-![Figure_2](./CoT-RAG-survey/研討論文/CoT-RAG_Integrating_Chain_of_Thought_and_Retrieval-Augmented_Generation_to_Enhance_Reasoning_in_Large_Language_Models/images/Figure_2.png)
+![Figure_2](./images/Figure_2.png)
 
 ## 實驗
 
@@ -197,37 +197,37 @@
 - Accuracy on **nine datasets**
     - ERNIE-Speed-128K
 
-    ![Table_1](./CoT-RAG-survey/研討論文/CoT-RAG_Integrating_Chain_of_Thought_and_Retrieval-Augmented_Generation_to_Enhance_Reasoning_in_Large_Language_Models/images/Table_1.png)
+    ![Table_1](./images/Table_1.png)
 
     - ERNIE-3.5-128K
 
-    ![Table_5](./CoT-RAG-survey/研討論文/CoT-RAG_Integrating_Chain_of_Thought_and_Retrieval-Augmented_Generation_to_Enhance_Reasoning_in_Large_Language_Models/images/Table_5.png)
+    ![Table_5](./images/Table_5.png)
 
     - GLM-4-flash
 
-    ![Table_6](./CoT-RAG-survey/研討論文/CoT-RAG_Integrating_Chain_of_Thought_and_Retrieval-Augmented_Generation_to_Enhance_Reasoning_in_Large_Language_Models/images/Table_6.png)
+    ![Table_6](./images/Table_6.png)
 
     - GPT-4o mini
 
-    ![Table_4](./CoT-RAG-survey/研討論文/CoT-RAG_Integrating_Chain_of_Thought_and_Retrieval-Augmented_Generation_to_Enhance_Reasoning_in_Large_Language_Models/images/Table_4.png)
+    ![Table_4](./images/Table_4.png)
 
     - GPT-4o
 
-    ![Table_7](./CoT-RAG-survey/研討論文/CoT-RAG_Integrating_Chain_of_Thought_and_Retrieval-Augmented_Generation_to_Enhance_Reasoning_in_Large_Language_Models/images/Table_7.png)
+    ![Table_7](./images/Table_7.png)
 
 - Runtime (sec.) on **nine datasets**
 
-    ![Table_8](./CoT-RAG-survey/研討論文/CoT-RAG_Integrating_Chain_of_Thought_and_Retrieval-Augmented_Generation_to_Enhance_Reasoning_in_Large_Language_Models/images/Table_8.png)
+    ![Table_8](./images/Table_8.png)
 
 -  **vertical domains**
     - GPT-4o mini
         - Accuracy on four datasets
 
-        ![Table_2](./CoT-RAG-survey/研討論文/CoT-RAG_Integrating_Chain_of_Thought_and_Retrieval-Augmented_Generation_to_Enhance_Reasoning_in_Large_Language_Models/images/Table_2.png)
+        ![Table_2](./images/Table_2.png)
 
         - Runtime and token
 
-        ![Table_9](./CoT-RAG-survey/研討論文/CoT-RAG_Integrating_Chain_of_Thought_and_Retrieval-Augmented_Generation_to_Enhance_Reasoning_in_Large_Language_Models/images/Table_9.png)
+        ![Table_9](./images/Table_9.png)
 
 ### 結論
 

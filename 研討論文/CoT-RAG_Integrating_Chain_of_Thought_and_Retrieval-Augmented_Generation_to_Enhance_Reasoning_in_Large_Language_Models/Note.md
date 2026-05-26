@@ -22,7 +22,7 @@
 
 1. 專家預建立[決策樹](https://github.com/hustlfy123/CoT-RAG/tree/main/data/DecisionTree)，僅離線建構一次
     - 父節點與子節點之間具有明確定義的邏輯關係
-        - 父節點（parent nodes）代表較一般化或前置性的問題
+        - 父節點代表較一般化或前置性的問題
         - 父節點中的資訊與推理結果會傳遞給子節點
         - 藉此協助子節點完成問題求解
 
@@ -73,6 +73,10 @@
         
 ![Figure_3](./images/Figure_3.png)
 
+> LLM_answer="Given the question, the case is an example about the question. Please study this example and answer the question based on the description"
+
+> "給定問題，有個案例是與問題相關的範例。請研究範例，並根據描述回答問題。"
+
 3. 產生 初始「虛擬程式知識圖譜」(PKG)
 
 ### 2. Learnable Knowledge Case-aware RAG
@@ -103,8 +107,8 @@
 
 | 項目                |   數量 |
 | ------------------ | ---: |
-| 通用領域開放資料庫          |  9 種 |
-| 垂直領域開放資料庫          |  4 種 |
+| 通用領域 (開放資料庫)          |  9 種 |
+| 垂直領域 (開放資料庫)          |  4 種 |
 | 對比 CoT 方法          | 13 種 |
 | Faiss 向量資料庫索引      |  6 種 |
 | LLM-based RAG 系統架構 |  8 種 |
@@ -112,7 +116,7 @@
 
 ---
 
-- 通用領域開放資料庫 (9)
+- 通用領域 (9)
     
     | 類別   | 資料集                       | 主要用途      |
     | ---- | ------------------------- | --------- |
@@ -126,7 +130,7 @@
     | 符號推理 | Last Letter Concatenation | 字串與符號推理   |
     | 符號推理 | Coin Flip                 | 狀態追蹤與邏輯推理 |
 
-- 垂直領域（Vertical Domains）(4)
+- 垂直領域 (4)
 
     | 領域      | 資料集              | 主要用途        |
     | ------- | ---------------- | ----------- |
@@ -135,7 +139,9 @@
     | 金融      | CFBenchmark（CFB） | 金融知識推理      |
     | 邏輯 / 綜合 | AGIEval（AGI）     | 高階推理與綜合能力評估 |
 
-- CoT 方法 (13)
+- 對照的 CoT 方法 (13)
+
+    > 依年份降冪排序，同年僅併排
 
     | 方法            | 年份    | 核心概念                             |
     | ------------- | ----- | -------------------------------- |
@@ -152,9 +158,10 @@
     | Manual-CoT    | 2022  | 使用 thought chain 提示，引導逐步推理       |
     | Zero-shot-CoT | 2022  | 加入「Let’s think step by step」觸發推理 |
     | Zero-shot     | —     | 僅輸入原始問題，不使用額外方法                  |
-    |
 
 - Faiss 向量資料庫索引 (6)
+
+> 若 RAG 改採連接向量資料庫 Faiss，檢視**索引資料方式**差異
 
     | 方法 | 核心概念 | 速度 | 精度 | 記憶體 |
     | ------- | ------------ | --- | -- | --- |
@@ -168,6 +175,8 @@
 
 - LLM-based RAG 系統架構 (8)
 
+    > 依年份降冪排序，同年僅併排
+
     | 方法        | 年份    | 核心概念                                    |
     | --------- | ----- | --------------------------------------- |
     | ToG-2     | 2025  | 利用 KG 的 entity 連結進行知識導向檢索               |
@@ -178,10 +187,11 @@
     | AtomR     | 2024  | 原子層級的異質知識推理框架                           |
     | GraphRAG  | 2024  | 結合 RAG、query-focused summarization 與 KG |
     | ToG       | 2024b | 使用 iterative beam search 尋找最佳 KG 推理路徑   |
-    |
 
 - 選用 LLM (5)
     
+    > 依年份降冪排序，同年僅併排
+
     > temperature=0, max token=1000
     
     | 模型               | 開發單位    | 年份    | 特點             |
@@ -195,6 +205,9 @@
 ### 實驗結果
 
 - Accuracy on **nine datasets**
+
+    > 同表格序位
+
     - ERNIE-Speed-128K
 
     ![Table_1](./images/Table_1.png)
@@ -235,4 +248,5 @@
 - 垂直領域測試中，該框架顯著降低錯誤率
 - 受限於高階模型（如 GPT-4）以及初始決策樹人力構建成本
 - 分解實體數量在達 5 個之後，Accuracy 就開始驟降
-- 雖然執行時間高，但消耗 token 量相對高
+- 執行時間偏高，但消耗 token 量也相對高
+- 以 GPT-4o mini 參考下，垂直領域表現佳

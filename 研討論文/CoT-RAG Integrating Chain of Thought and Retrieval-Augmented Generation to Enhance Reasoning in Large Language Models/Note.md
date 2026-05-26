@@ -1,0 +1,238 @@
+# CoT-RAG: Integrating Chain of Thought and Retrieval-Augmented Generation
+
+## 摘要
+
+> 開發了一套整合知識圖譜引導、案例感知檢索與虛擬程式碼指令執行的 CoT-RAG 框架方法，發現能在多種推理任務中顯著提升準確度
+
+## 盲區
+
+- **決策樹** 並非機器學習的模型，僅僅是自行設計的結構
+- **RAG** 就是直接銜接知識圖譜
+
+## 研究動機與背景
+
+- 現有的思維鏈（CoT）推理方法**過於依賴模型自主生成步驟**，容易產生事實**幻覺**或邏輯跳躍
+- 自然語言提示詞在處理嚴謹邏輯時，**表現常遜於程式碼形式的提示詞**，但**程式碼對一般使用者門檻過高**
+
+## 研究做法
+
+### 1. Knowledge Graph-driven CoT Generation
+
+> 初始化 / 更新 DT
+
+1. 專家預建立[決策樹](https://github.com/hustlfy123/CoT-RAG/tree/main/data/DecisionTree)，僅離線建構一次
+    - 父節點與子節點之間具有明確定義的邏輯關係
+        - 父節點（parent nodes）代表較一般化或前置性的問題
+        - 父節點中的資訊與推理結果會傳遞給子節點
+        - 藉此協助子節點完成問題求解
+
+    範例：
+    ```
+    0
+    Sub-question 1: "What are the rates of Friend P and Friend Q in relation to each other?"
+    Sub-question 2 (Parent node: Sub-question 1): "What is the combined rate of both friends as they walk towards each other?"
+    Sub-question 3 (Parent node: Sub-question 2): "How long will it take for Friend P and Friend Q to meet?"
+    Sub-question 4 (Parent node: Sub-question 3): "How far will Friend P walk in the time it takes for them to meet?"
+
+    1
+    Sub-question 1: "What is the equation of line k given that it passes through the origin and has a slope of 1/5?"
+    Sub-question 2 (Parent node: Sub-question 1): "How can the coordinates (x, 1) be substituted into the equation of line k to find the value of x?"
+    Sub-question 3 (Parent node: Sub-question 1): "How can the coordinates (5, y) be substituted into the equation of line k to find the value of y?"
+    Sub-question 4 (Parent node: Sub-question 2): "What is the specific value of x after substituting (x, 1) into the line k equation?"
+    Sub-question 5 (Parent node: Sub-question 3): "What is the specific value of y after substituting (5, y) into the line k equation?"
+
+    ...
+    ```
+    樹狀圖呈現
+    ```
+    0
+    Q1: What are the rates of Friend P and Friend Q in relation to each other?
+    └─ Q2: What is the combined rate of both friends as they walk towards each other?
+    └─ Q3: How long will it take for Friend P and Friend Q to meet?
+        └─ Q4: How far will Friend P walk in the time it takes for them to meet?
+
+    1
+    Q1: What is the equation of line k given that it passes through the origin and has a slope of 1/5?
+    ├─ Q2: How can the coordinates (x, 1) be substituted into the equation of line k to find the value of x?
+    │  └─ Q4: What is the specific value of x after substituting (x, 1) into the line k equation?
+    └─ Q3: How can the coordinates (5, y) be substituted into the equation of line k to find the value of y?
+    └─ Q5: What is the specific value of y after substituting (5, y) into the line k equation?
+
+    ...
+    ```
+
+2. 再由模型分解成數個實體(約 5 個時，精確率最高，超過則逐漸下滑)，組成具推理依賴關係的知識圖譜
+    - 知識圖譜： `<實體1, 提供答案, 實體2>`，表示 `實體1 提供答案予 實體2`
+    - 實體屬性：
+        | 欄位                | 說明                                                  |
+        | ----------------- | --------------------------------------------------- |
+        | `sub_question`    | 將原始複雜問題拆解後得到的簡化組成部分                                 |
+        | `sub_case`        | 從決策樹節點的「知識案例」中提取出的簡潔範例                              |
+        | `sub_description` | 對應子問題的文本描述。**初始值為空**，後續由使用者查詢中提取的資訊或其他實體的「答案」進行賦值 |
+        | `answer`          | LLM 對子問題輸出的推理結果。**初始值為空**，直到第三階段才會生成                   |
+        
+![Figure_3](./研討論文/CoT-RAG_Integrating_Chain_of_Thought_and_Retrieval-Augmented_Generation_to_Enhance_Reasoning_in_Large_Language_Models/images/Figure_3.png)
+
+3. 產生 初始「虛擬程式知識圖譜」(PKG)
+
+### 2. Learnable Knowledge Case-aware RAG
+
+> 針對使用者提出的具體問題進行資訊提取與圖譜更新
+
+1. LLM 結合第一階段的「sub_question」與「sub_case」作為提示，從用戶輸入中精確提取對應的子描述 (Sub-descriptions)
+2. 子描述 (Sub-descriptions) 被賦值給知識圖譜中對應實體的屬性，更新「虛擬程式知識圖譜」(轉為 updated_PKG)
+3. 檢索相關的子案例（Sub-cases），提供模型參考範例
+
+    > 減輕模型邏輯錯誤或事實偏見
+
+### 3. Pseudo-Program Prompting Execution
+
+> 模型執行程式碼
+
+1. 檢索該實體的子案例與子描述進行學習，然後產生該步驟的答案
+
+> 前一個實體的答案會傳遞給後續實體作為推理前提，確保邏輯的嚴密連貫
+
+### 4. 系統架構
+
+![Figure_2](./研討論文/CoT-RAG_Integrating_Chain_of_Thought_and_Retrieval-Augmented_Generation_to_Enhance_Reasoning_in_Large_Language_Models/images/Figure_2.png)
+
+## 實驗
+
+### 實驗內容
+
+| 項目                |   數量 |
+| ------------------ | ---: |
+| 通用領域開放資料庫          |  9 種 |
+| 垂直領域開放資料庫          |  4 種 |
+| 對比 CoT 方法          | 13 種 |
+| Faiss 向量資料庫索引      |  6 種 |
+| LLM-based RAG 系統架構 |  8 種 |
+| LLM 模型             |  5 種 |
+
+---
+
+- 通用領域開放資料庫 (9)
+    
+    | 類別   | 資料集                       | 主要用途      |
+    | ---- | ------------------------- | --------- |
+    | 算術推理 | AQUA                      | 數學與算術推理   |
+    | 算術推理 | GSM8K                     | 國小數學文字題推理 |
+    | 算術推理 | MultiArith                | 多步驟算術問題   |
+    | 算術推理 | SingleEq                  | 單方程式求解    |
+    | 常識推理 | HotpotQA                  | 多跳問答推理    |
+    | 常識推理 | CSQA                      | 常識推理      |
+    | 常識推理 | SIQA                      | 社會情境理解    |
+    | 符號推理 | Last Letter Concatenation | 字串與符號推理   |
+    | 符號推理 | Coin Flip                 | 狀態追蹤與邏輯推理 |
+
+- 垂直領域（Vertical Domains）(4)
+
+    | 領域      | 資料集              | 主要用途        |
+    | ------- | ---------------- | ----------- |
+    | 法律      | LawBench（LaB）    | 法律推理與問答     |
+    | 法律      | LegalBench（LeB）  | 法律文本理解與推理   |
+    | 金融      | CFBenchmark（CFB） | 金融知識推理      |
+    | 邏輯 / 綜合 | AGIEval（AGI）     | 高階推理與綜合能力評估 |
+
+- CoT 方法 (13)
+
+    | 方法            | 年份    | 核心概念                             |
+    | ------------- | ----- | -------------------------------- |
+    | ZEUS          | 2025  | 以不確定性估計選擇示範案例                    |
+    | Pattern-CoT   | 2025  | 使用 reasoning patterns 強化推理       |
+    | QDMRPS        | 2024a | 將問題拆解為 DAG 進行推理                  |
+    | Iter-CoT      | 2024a | 透過 iterative bootstrapping 修正推理鏈 |
+    | KG-CoT        | 2024  | 使用 KG 圖推理生成顯式推理路徑                |
+    | Complex-CoT   | 2023  | 以範例選擇機制支援多步推理                    |
+    | Auto-CoT      | 2023  | 自動生成高品質 prompt                   |
+    | PS            | 2023a | 先規劃再求解                           |
+    | KD-CoT        | 2023  | 結合檢索器與非結構化知識                     |
+    | IRCoT         | 2023  | 推理與知識檢索交錯進行                      |
+    | Manual-CoT    | 2022  | 使用 thought chain 提示，引導逐步推理       |
+    | Zero-shot-CoT | 2022  | 加入「Let’s think step by step」觸發推理 |
+    | Zero-shot     | —     | 僅輸入原始問題，不使用額外方法                  |
+    |
+
+- Faiss 向量資料庫索引 (6)
+
+    | 方法 | 核心概念 | 速度 | 精度 | 記憶體 |
+    | ------- | ------------ | --- | -- | --- |
+    | FlatL2 | 全比對 | 慢 | 最高 | 大 |
+    | FlatIP | 全比對 cosine 類 | 慢 | 最高 | 大 |
+    | IVFFlat | 分群後搜尋 | 快 | 高 | 中 |
+    | LSH | Hash bucket | 很快 | 中低 | 小 |
+    | PQ | 向量壓縮 | 快 | 中 | 很小 |
+    | IVFPQ | 分群+壓縮 | 非常快 | 中 | 很小 |
+    | No expert | 無專家決策樹 (LLM 自產) | X | X | X |
+
+- LLM-based RAG 系統架構 (8)
+
+    | 方法        | 年份    | 核心概念                                    |
+    | --------- | ----- | --------------------------------------- |
+    | ToG-2     | 2025  | 利用 KG 的 entity 連結進行知識導向檢索               |
+    | PoG       | 2025  | 整合 KG 推理路徑提升 LLM 推理能力                   |
+    | RoG       | 2024  | 先規劃 KG 關係路徑，再擷取推理路徑                     |
+    | Graph-CoT | 2024  | 在圖結構上進行迭代推理                             |
+    | RRKG      | 2024  | 結合可解釋 KG 與 LLM 強化複雜推理                   |
+    | AtomR     | 2024  | 原子層級的異質知識推理框架                           |
+    | GraphRAG  | 2024  | 結合 RAG、query-focused summarization 與 KG |
+    | ToG       | 2024b | 使用 iterative beam search 尋找最佳 KG 推理路徑   |
+    |
+
+- 選用 LLM (5)
+    
+    > temperature=0, max token=1000
+    
+    | 模型               | 開發單位    | 年份    | 特點             |
+    | ---------------- | ------- | ----- | -------------- |
+    | ERNIE-Speed-128K | Baidu   | 2025  | 支援 128K 長上下文處理 |
+    | ERNIE-3.5-128K   | Baidu   | 2025  | ERNIE 系列長文本模型  |
+    | GLM-4-flash      | ZhipuAI | 2025  | 高速、輕量化推理       |
+    | GPT-4o mini      | OpenAI  | 2024b | 輕量版多模態模型       |
+    | GPT-4o           | OpenAI  | 2024a | 完整多模態大型語言模型    |
+
+### 實驗結果
+
+- Accuracy on **nine datasets**
+    - ERNIE-Speed-128K
+
+    ![Table_1](./研討論文/CoT-RAG_Integrating_Chain_of_Thought_and_Retrieval-Augmented_Generation_to_Enhance_Reasoning_in_Large_Language_Models/images/Table_1.png)
+
+    - ERNIE-3.5-128K
+
+    ![Table_5](./研討論文/CoT-RAG_Integrating_Chain_of_Thought_and_Retrieval-Augmented_Generation_to_Enhance_Reasoning_in_Large_Language_Models/images/Table_5.png)
+
+    - GLM-4-flash
+
+    ![Table_6](./研討論文/CoT-RAG_Integrating_Chain_of_Thought_and_Retrieval-Augmented_Generation_to_Enhance_Reasoning_in_Large_Language_Models/images/Table_6.png)
+
+    - GPT-4o mini
+
+    ![Table_4](./研討論文/CoT-RAG_Integrating_Chain_of_Thought_and_Retrieval-Augmented_Generation_to_Enhance_Reasoning_in_Large_Language_Models/images/Table_4.png)
+
+    - GPT-4o
+
+    ![Table_7](./研討論文/CoT-RAG_Integrating_Chain_of_Thought_and_Retrieval-Augmented_Generation_to_Enhance_Reasoning_in_Large_Language_Models/images/Table_7.png)
+
+- Runtime (sec.) on **nine datasets**
+
+    ![Table_8](./研討論文/CoT-RAG_Integrating_Chain_of_Thought_and_Retrieval-Augmented_Generation_to_Enhance_Reasoning_in_Large_Language_Models/images/Table_8.png)
+
+-  **vertical domains**
+    - GPT-4o mini
+        - Accuracy on four datasets
+
+        ![Table_2](./研討論文/CoT-RAG_Integrating_Chain_of_Thought_and_Retrieval-Augmented_Generation_to_Enhance_Reasoning_in_Large_Language_Models/images/Table_2.png)
+
+        - Runtime and token
+
+        ![Table_9](./研討論文/CoT-RAG_Integrating_Chain_of_Thought_and_Retrieval-Augmented_Generation_to_Enhance_Reasoning_in_Large_Language_Models/images/Table_9.png)
+
+### 結論
+
+- 實驗結果顯示 CoT-RAG 在所有測試集上準確率平均提升 4.0% 至 44.3%
+- 垂直領域測試中，該框架顯著降低錯誤率
+- 受限於高階模型（如 GPT-4）以及初始決策樹人力構建成本
+- 分解實體數量在達 5 個之後，Accuracy 就開始驟降
+- 雖然執行時間高，但消耗 token 量相對高

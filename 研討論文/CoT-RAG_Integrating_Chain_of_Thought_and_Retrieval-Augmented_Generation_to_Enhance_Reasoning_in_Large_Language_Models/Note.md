@@ -262,3 +262,4 @@ Q1: What is the equation of line k given that it passes through the origin and h
 - 原始碼內未見，決策樹節點的 `Knowledge case` 去哪了?
 - PKG 內的實體填具數量如何決定?
 - 執行時間偏高，但消耗 token 量也相對高
+- 實體之間傳遞答案，也許用不上，僅是同類題目而已

@@ -2,7 +2,7 @@
 
 ## 摘要
 
-> 開發了一套整合知識圖譜引導、案例感知檢索與虛擬程式碼指令執行的 CoT-RAG 框架方法，發現能在多種推理任務中顯著提升準確度
+> 提出一套整合知識圖譜引導、案例感知檢索與虛擬程式碼指令執行的 CoT-RAG 框架，能在多種推理任務中顯著提升準確度
 
 ## 盲區
 
@@ -14,7 +14,7 @@
 - 現有的思維鏈（CoT）推理方法**過於依賴模型自主生成步驟**，容易產生事實**幻覺**或邏輯跳躍
 - 自然語言提示詞在處理嚴謹邏輯時，**表現常遜於程式碼形式的提示詞**，但**程式碼對一般使用者門檻過高**
 
-## 研究做法
+## 框架
 
 ### 1. Knowledge Graph-driven CoT Generation
 
@@ -26,42 +26,46 @@
         - 父節點中的資訊與推理結果會傳遞給子節點
         - 藉此協助子節點完成問題求解
 
-    範例：
-    ```
-    0
-    Sub-question 1: "What are the rates of Friend P and Friend Q in relation to each other?"
-    Sub-question 2 (Parent node: Sub-question 1): "What is the combined rate of both friends as they walk towards each other?"
-    Sub-question 3 (Parent node: Sub-question 2): "How long will it take for Friend P and Friend Q to meet?"
-    Sub-question 4 (Parent node: Sub-question 3): "How far will Friend P walk in the time it takes for them to meet?"
+實體分解範例 (AQuA)：
+```
+0
+Sub-question 1: "What are the rates of Friend P and Friend Q in relation to each other?"
+Sub-question 2 (Parent node: Sub-question 1): "What is the combined rate of both friends as they walk towards each other?"
+Sub-question 3 (Parent node: Sub-question 2): "How long will it take for Friend P and Friend Q to meet?"
+Sub-question 4 (Parent node: Sub-question 3): "How far will Friend P walk in the time it takes for them to meet?"
 
-    1
-    Sub-question 1: "What is the equation of line k given that it passes through the origin and has a slope of 1/5?"
-    Sub-question 2 (Parent node: Sub-question 1): "How can the coordinates (x, 1) be substituted into the equation of line k to find the value of x?"
-    Sub-question 3 (Parent node: Sub-question 1): "How can the coordinates (5, y) be substituted into the equation of line k to find the value of y?"
-    Sub-question 4 (Parent node: Sub-question 2): "What is the specific value of x after substituting (x, 1) into the line k equation?"
-    Sub-question 5 (Parent node: Sub-question 3): "What is the specific value of y after substituting (5, y) into the line k equation?"
+1
+Sub-question 1: "What is the equation of line k given that it passes through the origin and has a slope of 1/5?"
+Sub-question 2 (Parent node: Sub-question 1): "How can the coordinates (x, 1) be substituted into the equation of line k to find the value of x?"
+Sub-question 3 (Parent node: Sub-question 1): "How can the coordinates (5, y) be substituted into the equation of line k to find the value of y?"
+Sub-question 4 (Parent node: Sub-question 2): "What is the specific value of x after substituting (x, 1) into the line k equation?"
+Sub-question 5 (Parent node: Sub-question 3): "What is the specific value of y after substituting (5, y) into the line k equation?"
 
-    ...
-    ```
-    樹狀圖呈現
-    ```
-    0
-    Q1: What are the rates of Friend P and Friend Q in relation to each other?
-    └─ Q2: What is the combined rate of both friends as they walk towards each other?
-    └─ Q3: How long will it take for Friend P and Friend Q to meet?
-        └─ Q4: How far will Friend P walk in the time it takes for them to meet?
+...
+```
+樹狀圖呈現
+```
+0
+Q1: What are the rates of Friend P and Friend Q in relation to each other?
+└─ Q2: What is the combined rate of both friends as they walk towards each other?
+└─ Q3: How long will it take for Friend P and Friend Q to meet?
+    └─ Q4: How far will Friend P walk in the time it takes for them to meet?
 
-    1
-    Q1: What is the equation of line k given that it passes through the origin and has a slope of 1/5?
-    ├─ Q2: How can the coordinates (x, 1) be substituted into the equation of line k to find the value of x?
-    │  └─ Q4: What is the specific value of x after substituting (x, 1) into the line k equation?
-    └─ Q3: How can the coordinates (5, y) be substituted into the equation of line k to find the value of y?
-    └─ Q5: What is the specific value of y after substituting (5, y) into the line k equation?
+1
+Q1: What is the equation of line k given that it passes through the origin and has a slope of 1/5?
+├─ Q2: How can the coordinates (x, 1) be substituted into the equation of line k to find the value of x?
+│  └─ Q4: What is the specific value of x after substituting (x, 1) into the line k equation?
+└─ Q3: How can the coordinates (5, y) be substituted into the equation of line k to find the value of y?
+└─ Q5: What is the specific value of y after substituting (5, y) into the line k equation?
 
-    ...
-    ```
+...
+```
 
-2. 再由模型分解成數個實體(約 5 個時，精確率最高，超過則逐漸下滑)，組成具推理依賴關係的知識圖譜
+> 文中提及 `... Distinct from traditional DTs, each node in our DT contains a Question and a Knowledge case...`
+
+> `Knowledge case` ???
+
+2. 再由 LLM 分解成數個實體 (文中與 repo 皆未詳述數量，已知為動態)，實體再組成具推理依賴關係的知識圖譜
     - 知識圖譜： `<實體1, 提供答案, 實體2>`，表示 `實體1 提供答案予 實體2`
     - 實體屬性：
         | 欄位                | 說明                                                  |
@@ -77,25 +81,26 @@
 
 > "給定問題，有個案例是與問題相關的範例。請研究範例，並根據描述回答問題。"
 
-3. 產生 初始「虛擬程式知識圖譜」(PKG)
+3. 產生 初始「虛擬程式知識圖譜」(PKG，pseudo-program knowledge graph)
+
+![Table_11.png](./images/Table_11.png)
 
 ### 2. Learnable Knowledge Case-aware RAG
 
-> 針對使用者提出的具體問題進行資訊提取與圖譜更新
+> 針對使用者提出的具體問題進行檢索圖譜(or 更新)
 
-1. LLM 結合第一階段的「sub_question」與「sub_case」作為提示，從用戶輸入中精確提取對應的子描述 (Sub-descriptions)
-2. 子描述 (Sub-descriptions) 被賦值給知識圖譜中對應實體的屬性，更新「虛擬程式知識圖譜」(轉為 updated_PKG)
-3. 檢索相關的子案例（Sub-cases），提供模型參考範例
+1. LLM 從使用者輸入提取對應的子描述 (Sub-descriptions)
+2. 檢索圖譜結果的 sub_question、sub_case 與子描述 (Sub-descriptions) 針對「虛擬程式知識圖譜」對應實體屬性填值，更新「虛擬程式知識圖譜」(此時轉為 updated_PKG)
 
-    > 減輕模型邏輯錯誤或事實偏見
+![Table_12.png](./images/Table_12.png)
 
 ### 3. Pseudo-Program Prompting Execution
 
-> 模型執行程式碼
+> LLM 仿程式碼執行「虛擬程式知識圖譜」
 
-1. 檢索該實體的子案例與子描述進行學習，然後產生該步驟的答案
+1. LLM 執行「虛擬程式知識圖譜」(updated_PKG)
 
-> 前一個實體的答案會傳遞給後續實體作為推理前提，確保邏輯的嚴密連貫
+![Table_13.png](./images/Table_13.png)
 
 ### 4. 系統架構
 
@@ -247,6 +252,11 @@
 - 實驗結果顯示 CoT-RAG 在所有測試集上準確率平均提升 4.0% 至 44.3%
 - 垂直領域測試中，該框架顯著降低錯誤率
 - 受限於高階模型（如 GPT-4）以及初始決策樹人力構建成本
-- 分解實體數量在達 5 個之後，Accuracy 就開始驟降
+- 分解實體數量在超過 5 個之後，所有方法 Accuracy 皆開始驟降
+- 以 GPT-4o mini 參考下 (非最新模型)，垂直領域表現最佳
+
+### 後記
+
+- 原始碼內未見，決策樹節點的 `Knowledge case` 去哪了?
+- PKG 內的實體填具數量如何決定?
 - 執行時間偏高，但消耗 token 量也相對高
-- 以 GPT-4o mini 參考下，垂直領域表現佳

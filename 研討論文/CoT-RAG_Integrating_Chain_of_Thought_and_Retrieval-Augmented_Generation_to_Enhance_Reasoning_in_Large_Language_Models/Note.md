@@ -26,7 +26,7 @@
         - 父節點中的資訊與推理結果會傳遞給子節點
         - 藉此協助子節點完成問題求解 (儘管答案可能用不到)
 
-> 未有闡述建立原則
+> 未闡述任何建立原則
 
 實體分解範例 (AQuA)：
 ```
@@ -73,15 +73,15 @@ Q1: What is the equation of line k given that it passes through the origin and h
         | 欄位                | 說明                                                  |
         | ----------------- | --------------------------------------------------- |
         | `sub_question`    | 將原始複雜問題拆解後得到的簡化組成部分                                 |
-        | `sub_case`        | 從決策樹節點的「知識案例」中提取出的簡潔範例                              |
-        | `sub_description` | 對應子問題的文本描述。**初始值為空**，後續由使用者查詢中提取的資訊或其他實體的「答案」進行賦值 |
+        | `sub_case`        | 從決策樹節點的「知識案例 (Knowledge case)」中提取出的簡潔範例                              |
+        | `sub_description` | 對應子問題的文本描述。**初始值為空**，後續由使用者查詢中提取的資訊與其他實體的「答案」進行賦值 |
         | `answer`          | LLM 對子問題輸出的推理結果。**初始值為空**，直到第三階段才會生成                   |
         
 ![Figure_3](./images/Figure_3.png)
 
 > LLM_answer="Given the question, the case is an example about the question. Please study this example and answer the question based on the description"
 
-> "給定問題，有個案例是與問題相關的範例。請研究範例，並根據描述回答問題。"
+> "給定問題，而案例為與問題相關的範例。請研究範例，並根據描述回答問題。"
 
 3. 產生 初始「虛擬程式知識圖譜」(PKG，pseudo-program knowledge graph)
 

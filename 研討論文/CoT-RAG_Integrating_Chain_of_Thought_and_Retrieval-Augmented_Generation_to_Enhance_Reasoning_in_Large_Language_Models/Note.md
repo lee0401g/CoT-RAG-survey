@@ -114,7 +114,7 @@ program logic to execute. During execution, the LLM function will be called mult
 corresponding questions based on different cases and descriptions. Please output the final result of this program text in natural
 language."
 
-> "#給定一段程式文本，你的角色是一個 LLM 函式（LLM function），其具有三個參數：case、question 與 description。description 為文字描述內容，question 需要你根據 description 進行回答，而 case 則包含經處理的情境、補充資訊或相關考量，以協助你回答問題。你必須嚴格遵循程式邏輯來執行。在執行過程中，LLM 函式會被多次呼叫，這代表你需要根據不同的 case 與 description 回答相應問題。請以自然語言輸出此程式文本的最終結果。
+> "#給定一段程式文本，你的角色是一個 LLM 函式，其具有三個參數：case、question 與 description。description 為文字描述內容，question 需要你根據 description 進行回答，而 case 則包含經處理的情境、補充資訊或相關考量，以協助你回答問題。你必須嚴格遵循程式邏輯來執行。在執行過程中，LLM 函式會被多次呼叫，這代表你需要根據不同的 case 與 description 回答相應問題。請以自然語言輸出此程式文本的最終結果。
 "
 
 > **上頭追加一段提示詞之外，欄位 'Sub-descriptions' 也填具內容**
@@ -209,12 +209,12 @@ language."
 
     | 方法        | 年份    | 核心概念                                    |
     | --------- | ----- | --------------------------------------- |
-    | ToG-2     | 2025  | 利用 KG 的 entity 連結進行知識導向檢索               |
-    | PoG       | 2025  | 整合 KG 推理路徑提升 LLM 推理能力                   |
-    | RoG       | 2024  | 先規劃 KG 關係路徑，再擷取推理路徑                     |
-    | Graph-CoT | 2024  | 在圖結構上進行迭代推理                             |
-    | RRKG      | 2024  | 結合可解釋 KG 與 LLM 強化複雜推理                   |
-    | AtomR     | 2024  | 原子層級的異質知識推理框架                           |
+    | ToG-2     | 2025  | 利用 KG 的 entity 連結進行知識導向檢索            |
+    | PoG       | 2025  | 整合 KG 推理路徑提升 LLM 推理能力                 |
+    | RoG       | 2024  | 先規劃 KG 關係路徑，再擷取推理路徑                |
+    | Graph-CoT | 2024  | 在圖結構上進行迭代推理                            |
+    | RRKG      | 2024  | 結合可解釋 KG 與 LLM 強化複雜推理                 |
+    | AtomR     | 2024  | 原子層級的異質知識推理框架                        |
     | GraphRAG  | 2024  | 結合 RAG、query-focused summarization 與 KG |
     | ToG       | 2024b | 使用 iterative beam search 尋找最佳 KG 推理路徑   |
 
@@ -224,13 +224,13 @@ language."
 
     > temperature=0, max token=1000
     
-    | 模型               | 開發單位    | 年份    | 特點             |
+    | 模型               | 開發單位    | 年份    | 特點            |
     | ---------------- | ------- | ----- | -------------- |
     | ERNIE-Speed-128K | Baidu   | 2025  | 支援 128K 長上下文處理 |
     | ERNIE-3.5-128K   | Baidu   | 2025  | ERNIE 系列長文本模型  |
     | GLM-4-flash      | ZhipuAI | 2025  | 高速、輕量化推理       |
     | GPT-4o mini      | OpenAI  | 2024b | 輕量版多模態模型       |
-    | GPT-4o           | OpenAI  | 2024a | 完整多模態大型語言模型    |
+    | GPT-4o           | OpenAI  | 2024a | 完整多模態大型語言模型  |
 
 ### 實驗結果
 

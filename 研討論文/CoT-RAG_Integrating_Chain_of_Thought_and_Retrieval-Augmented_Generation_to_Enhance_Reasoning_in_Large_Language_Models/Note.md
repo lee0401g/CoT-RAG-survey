@@ -21,6 +21,8 @@
 2. Learnable Knowledge Case-aware RAG
 3. Pseudo-Program Prompting Execution
 
+---
+
 ### Knowledge Graph-driven CoT Generation
 
 > 初始化 / 更新 DT
@@ -101,6 +103,8 @@
 
 > "給定問題，而案例為與問題相關的範例。請研究範例，並根據描述回答問題。"
 
+---
+
 ### Learnable Knowledge Case-aware RAG
 
 > 針對使用者提出的具體問題進行檢索 (or 更新) 圖譜
@@ -124,13 +128,17 @@ language."
 
 > **上頭追加一段提示詞之外，欄位 'Sub-descriptions' 也填具內容**
 
+---
+
 ### Pseudo-Program Prompting Execution
 
 > LLM 仿程式碼執行「虛擬程式知識圖譜」
 
-1. LLM 執行「虛擬程式知識圖譜」(updated_PKG)
+1. LLM 執行填具後的「虛擬程式知識圖譜」(updated_PKG)
 
 ![Table_13.png](./images/Table_13.png)
+
+---
 
 ### 系統架構
 
@@ -290,4 +298,4 @@ language."
 - 原始碼內未見，決策樹節點的 `Knowledge case` 去哪了?
 - PKG 內的實體填具數量如何決定?
 - 執行時間偏高，但消耗 token 量也相對高
-- 實體之間傳遞答案，也許用不上，僅是同類題目而已
+- 實體之間傳遞答案，有可能用不上

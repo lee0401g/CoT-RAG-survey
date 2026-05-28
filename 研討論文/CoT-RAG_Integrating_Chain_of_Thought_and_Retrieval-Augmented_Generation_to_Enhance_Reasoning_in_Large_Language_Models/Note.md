@@ -16,7 +16,12 @@
 
 ## 框架
 
-### 1. Knowledge Graph-driven CoT Generation
+三部份組成
+1. Knowledge Graph-driven CoT Generation
+2. Learnable Knowledge Case-aware RAG
+3. Pseudo-Program Prompting Execution
+
+### Knowledge Graph-driven CoT Generation
 
 > 初始化 / 更新 DT
 
@@ -96,7 +101,7 @@
 
 > "給定問題，而案例為與問題相關的範例。請研究範例，並根據描述回答問題。"
 
-### 2. Learnable Knowledge Case-aware RAG
+### Learnable Knowledge Case-aware RAG
 
 > 針對使用者提出的具體問題進行檢索 (or 更新) 圖譜
 
@@ -119,7 +124,7 @@ language."
 
 > **上頭追加一段提示詞之外，欄位 'Sub-descriptions' 也填具內容**
 
-### 3. Pseudo-Program Prompting Execution
+### Pseudo-Program Prompting Execution
 
 > LLM 仿程式碼執行「虛擬程式知識圖譜」
 
@@ -127,7 +132,7 @@ language."
 
 ![Table_13.png](./images/Table_13.png)
 
-### 4. 系統架構
+### 系統架構
 
 ![Figure_2](./images/Figure_2.png)
 

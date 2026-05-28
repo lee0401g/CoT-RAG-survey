@@ -97,11 +97,11 @@
 
 3. 產生 初始「虛擬程式知識圖譜」(PKG，pseudo-program knowledge graph)
 
-![Table_11.png](./images/Table_11.png)
+    ![Table_11.png](./images/Table_11.png)
 
-> "Given the question, the case is an example about the question. Please study this example and answer the question based on the description"
+    > "Given the question, the case is an example about the question. Please study this example and answer the question based on the description"
 
-> "給定問題，而案例為與問題相關的範例。請研究範例，並根據描述回答問題。"
+    > "給定問題，而案例為與問題相關的範例。請研究範例，並根據描述回答問題。"
 
 ---
 
@@ -112,21 +112,21 @@
 1. LLM 從使用者輸入提取對應的子描述 (Sub-descriptions)
 2. 檢索圖譜結果的 sub_question、sub_case 與子描述 (Sub-descriptions) 針對「虛擬程式知識圖譜」對應實體屬性填值，更新「虛擬程式知識圖譜」(此時轉為 updated_PKG)
 
-| 更新前 | 更新後 |
-| :-: | :-: |
-| ![Table_11.png](./images/Table_11.png) | ![Table_12.png](./images/Table_12.png) |
-
-> "#Given a program text, your role is the LLM function,which has three parameters: case, question, and description. The
-description is textual, the question requires you to answer based on the description, and the case involves processed scenarios or
-supplementary information or related considerations to assist you in answering the question. You need to strictly follow the
-program logic to execute. During execution, the LLM function will be called multiple times, which means you will answer
-corresponding questions based on different cases and descriptions. Please output the final result of this program text in natural
-language."
-
-> "#給定一段程式文本，你的角色是一個 LLM 函式，其具有三個參數：case、question 與 description。description 為文字描述內容，question 需要你根據 description 進行回答，而 case 則包含經處理的情境、補充資訊或相關考量，以協助你回答問題。你必須嚴格遵循程式邏輯來執行。在執行過程中，LLM 函式會被多次呼叫，這代表你需要根據不同的 case 與 description 回答相應問題。請以自然語言輸出此程式文本的最終結果。
-"
-
-> **上頭追加一段提示詞之外，欄位 'Sub-descriptions' 也填具內容**
+    | 更新前 | 更新後 |
+    | :-: | :-: |
+    | ![Table_11.png](./images/Table_11.png) | ![Table_12.png](./images/Table_12.png) |
+    
+    > "#Given a program text, your role is the LLM function,which has three parameters: case, question, and description. The
+    description is textual, the question requires you to answer based on the description, and the case involves processed scenarios or
+    supplementary information or related considerations to assist you in answering the question. You need to strictly follow the
+    program logic to execute. During execution, the LLM function will be called multiple times, which means you will answer
+    corresponding questions based on different cases and descriptions. Please output the final result of this program text in natural
+    language."
+    
+    > "#給定一段程式文本，你的角色是一個 LLM 函式，其具有三個參數：case、question 與 description。description 為文字描述內容，question 需要你根據 description 進行回答，而 case 則包含經處理的情境、補充資訊或相關考量，以協助你回答問題。你必須嚴格遵循程式邏輯來執行。在執行過程中，LLM 函式會被多次呼叫，這代表你需要根據不同的 case 與 description 回答相應問題。請以自然語言輸出此程式文本的最終結果。
+    "
+    
+    > **上頭追加一段提示詞之外，欄位 'Sub-descriptions' 也填具內容**
 
 ---
 
@@ -136,7 +136,7 @@ language."
 
 1. LLM 執行填具後的「虛擬程式知識圖譜」(updated_PKG)
 
-![Table_13.png](./images/Table_13.png)
+    ![Table_13.png](./images/Table_13.png)
 
 ---
 

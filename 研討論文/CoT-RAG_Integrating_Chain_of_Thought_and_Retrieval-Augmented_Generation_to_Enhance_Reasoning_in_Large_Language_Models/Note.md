@@ -1,4 +1,4 @@
-# CoT-RAG: Integrating Chain of Thought and Retrieval-Augmented Generation
+# [CoT-RAG: Integrating Chain of Thought and Retrieval-Augmented Generation](https://arxiv.org/pdf/2504.13534)
 
 ## 摘要
 
